@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -13,11 +14,23 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name="StudentGroup")
 public class StudentGroup {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "studentId")
+    @Column(unique = true, updatable = false, nullable = false)
     private UUID groupId;
 
     @Enumerated(EnumType.STRING)
     private Room room;
+
+    @OneToMany(mappedBy = "studentGroup", cascade = CascadeType.ALL)
+    private Set<Student> students;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private Teacher teacher;
+
+    // NEW: Each group has multiple sessions
+    @OneToMany(mappedBy = "studentGroup", cascade = CascadeType.ALL)
+    private Set<Session> sessions;
 }

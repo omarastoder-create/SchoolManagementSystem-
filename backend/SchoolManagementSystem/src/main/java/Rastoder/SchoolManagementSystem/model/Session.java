@@ -5,11 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Table
 @Entity
+@Table(name = "Session")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,13 +17,16 @@ public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, updatable = false)
     private UUID sessionId;
 
     @Column(nullable = false)
-
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(nullable = false)
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
+    private StudentGroup studentGroup;
 }

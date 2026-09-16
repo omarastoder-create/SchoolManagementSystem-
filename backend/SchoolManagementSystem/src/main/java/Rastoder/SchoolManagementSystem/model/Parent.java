@@ -30,14 +30,15 @@ public class Parent {
     @Column(unique = true)
     private String email;
 
-    @Column(nullable = false ,unique = true)
+    @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    @OneToMany (mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Student> children = new HashSet<Student>();
+    // FIX: Changed from @OneToMany to @ManyToMany
+    @ManyToMany(mappedBy = "parents")
+    private Set<Student> children = new HashSet<>();
 
     @Builder
-    public Parent( String name, String surname, String email, String phoneNumber) {
+    public Parent(String name, String surname, String email, String phoneNumber) {
         this.name = name;
         this.surname = surname;
         this.email = email;

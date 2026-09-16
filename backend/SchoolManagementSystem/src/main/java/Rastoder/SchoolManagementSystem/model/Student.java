@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +18,7 @@ import java.util.UUID;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true,updatable = false)
+    @Column(unique = true, updatable = false)
     private UUID studentId;
 
     @Column(nullable = false)
@@ -28,25 +30,34 @@ public class Student {
     @Column(nullable = false)
     private LocalDate birthDate;
 
-
     @Column(nullable = false)
     private int level;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING) // important
+    @Enumerated(EnumType.STRING)
     private Language language;
 
+    // FIX: Changed from @ManyToOne to @ManyToMany for multiple parents
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "student_parent",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "parent_id")
+    )
+    private Set<Parent> parents = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id",nullable = false)
-    private Parent parent;
+    @JoinColumn(name = "group_id")
+    private StudentGroup studentGroup;
 
     @Builder
-    public Student(String firstName, String lastName, LocalDate birthDate, int level, Language language, Parent parent) {
+    public Student(String firstName, String lastName, LocalDate birthDate, int level, Language language, Set<Parent> parents, StudentGroup studentGroup) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.level = level;
         this.language = language;
-        this.parent = parent;
+        this.parents = parents != null ? parents : new HashSet<>();
+        this.studentGroup = studentGroup;
     }
 }
