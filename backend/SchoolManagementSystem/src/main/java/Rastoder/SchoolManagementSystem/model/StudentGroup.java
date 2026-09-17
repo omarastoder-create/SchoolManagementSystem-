@@ -1,10 +1,9 @@
 package Rastoder.SchoolManagementSystem.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,6 +11,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name="StudentGroup")
 public class StudentGroup {
 
@@ -24,7 +25,7 @@ public class StudentGroup {
     private Room room;
 
     @OneToMany(mappedBy = "studentGroup", cascade = CascadeType.ALL)
-    private Set<Student> students;
+    private Set<Student> students = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false)

@@ -1,10 +1,12 @@
 package Rastoder.SchoolManagementSystem.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,5 +39,14 @@ public class Teacher {
     private Set<Language> languages;
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
-    private Set<StudentGroup> studentGroups;
+    private Set<StudentGroup> studentGroups = new HashSet<>();
+
+    @Builder
+    public Teacher(String firstName, String familyName, String phoneNumber, String description, Set<Language> languages) {
+        this.firstName = firstName;
+        this.familyName = familyName;
+        this.phoneNumber = phoneNumber;
+        this.description = description;
+        this.languages = languages;
+    }
 }
