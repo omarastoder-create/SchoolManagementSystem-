@@ -11,6 +11,7 @@ import Rastoder.SchoolManagementSystem.repository.TeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,11 +44,17 @@ public class StudentGroupService {
 
         StudentGroup saved = studentGroupRepository.save(studentGroup);
 
-        Set<UUID> sessionsIds = saved.getSessions().stream().map(session -> session.getSessionId())
-                .collect(Collectors.toSet());
+        Set<UUID> sessionsIds = saved.getSessions() != null
+                ? saved.getSessions().stream()
+                .map(session -> session.getSessionId())
+                .collect(Collectors.toSet())
+                : new HashSet<>();
 
-        Set<UUID> studentsIds = saved.getStudents().stream().map(student -> student.getStudentId())
-                .collect(Collectors.toSet());
+        Set<UUID> studentsIds = saved.getStudents() != null
+                ? saved.getStudents().stream()
+                .map(student -> student.getStudentId())
+                .collect(Collectors.toSet())
+                : new HashSet<>();
 
         return new StudentGroupResponse(
                 saved.getGroupId(),

@@ -33,5 +33,6 @@ public class StudentGroup {
 
     // NEW: Each group has multiple sessions
     @OneToMany(mappedBy = "studentGroup", cascade = CascadeType.ALL)
-    private Set<Session> sessions;
+    @Builder.Default
+    private Set<Session> sessions = new HashSet<>();
 }
