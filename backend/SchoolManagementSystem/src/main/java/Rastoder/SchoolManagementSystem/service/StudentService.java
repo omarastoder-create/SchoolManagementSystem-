@@ -68,4 +68,17 @@ public class StudentService {
     }
 
 
+    public List<StudentResponse> getAllStudents() {
+        List<StudentResponse> responses = studentRepository.findAll().stream().map(student ->
+                new StudentResponse(student.getStudentId(),
+                        student.getFirstName(),
+                        student.getLastName(),
+                        student.getBirthDate(),
+                        student.getLevel(),
+                        student.getLanguage(),
+                        student.getParents().stream().map(parent -> parent.getParentId())
+                                .collect(Collectors.toSet())))
+                .collect(Collectors.toList());
+        return responses;
+    }
 }
