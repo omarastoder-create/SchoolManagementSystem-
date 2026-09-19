@@ -44,4 +44,10 @@ public class StudentGroupController {
         List<StudentGroupResponse> listOfSG = studentGroupService.getAllStudentGroups();
         return ResponseEntity.status(HttpStatus.OK).body(listOfSG);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StudentGroupResponse> getStudentGroupById(@PathVariable UUID id){
+        StudentGroupResponse response = studentGroupService.getStudentGroupByService(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

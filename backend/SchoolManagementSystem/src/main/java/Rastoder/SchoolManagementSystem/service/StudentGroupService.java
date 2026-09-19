@@ -109,4 +109,19 @@ public class StudentGroupService {
 
         }).collect(Collectors.toList());
     }
+
+    public StudentGroupResponse getStudentGroupByService(UUID id) {
+        StudentGroup response = studentGroupRepository.findById(id).orElseThrow(() -> new RuntimeException("" +
+                "StudentGroupId does not exist"));
+            return new StudentGroupResponse(
+                    response.getGroupId(),
+                    response.getRoom(),
+                    response.getSessions() != null ? response.getSessions().stream().map(
+                            Session::getSessionId).collect(Collectors.toSet()):null,
+                    response.getTeacher() != null ? response.getTeacher().getTeacherId() : null ,
+                    response.getStudents() != null ? response.getStudents().stream().map(
+                            Student::getStudentId).collect(Collectors.toSet()) : new HashSet<>()
+                    ) ;
+    }
+
 }
