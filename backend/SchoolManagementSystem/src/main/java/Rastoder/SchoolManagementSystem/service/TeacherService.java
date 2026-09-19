@@ -19,6 +19,7 @@ public class TeacherService {
 
 
     public TeacherService(TeacherRepository teacherRepository) {
+
         this.teacherRepository = teacherRepository;
     }
 
@@ -57,7 +58,8 @@ public class TeacherService {
     }
 
     public TeacherResponse getTeacherById(UUID id) {
-        Teacher te = teacherRepository.getReferenceById(id);
+        Teacher te = teacherRepository.findById(id).orElseThrow(()->
+                new RuntimeException("The UUID doesn't match a Teacher."));
 
         return new TeacherResponse(te.getTeacherId(),
                 te.getFirstName(),

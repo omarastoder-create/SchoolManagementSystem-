@@ -81,4 +81,24 @@ public class StudentService {
                 .collect(Collectors.toList());
         return responses;
     }
+
+    public StudentResponse getStudentById(UUID id) {
+        Student s = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student with the id "+id
+                        +" not found "));
+
+        //getting the parents to a Set<UUID>
+        Set<UUID> parents =s.getParents().stream()
+                .map(parent ->parent.getParentId())
+                .collect(Collectors.toSet());
+
+        return new StudentResponse(s.getStudentId(),
+                s.getFirstName(),
+                s.getLastName(),
+                s.getBirthDate(),
+                s.getLevel(),
+                s.getLanguage(),
+                parents
+                );
+    }
 }
