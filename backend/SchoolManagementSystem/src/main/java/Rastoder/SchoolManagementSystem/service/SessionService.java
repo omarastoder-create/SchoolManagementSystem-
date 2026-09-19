@@ -10,7 +10,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class SessionService {
@@ -42,5 +44,16 @@ public class SessionService {
                 newSession.getContent(),
                 newSession.getStudentGroup().getGroupId()
         );
+    }
+
+    public List<SessionResponse> getListOfAllSession() {
+        List<Session> listOfSession = sessionRepository.findAll();
+        return  listOfSession.stream().map(session ->
+                new SessionResponse(
+                        session.getSessionId(),
+                        session.getStartDate(),
+                        session.getContent(),
+                        session.getStudentGroup() != null ? session.getStudentGroup().getGroupId() : null
+                )).collect(Collectors.toList());
     }
 }

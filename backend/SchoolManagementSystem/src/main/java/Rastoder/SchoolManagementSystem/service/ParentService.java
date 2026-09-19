@@ -6,6 +6,8 @@ import Rastoder.SchoolManagementSystem.model.Parent;
 import Rastoder.SchoolManagementSystem.repository.ParentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class ParentService {
 
@@ -34,5 +36,16 @@ public class ParentService {
                 saved.getEmail(),
                 saved.getPhoneNumber()
         );
+    }
+
+    public ParentResponse findById(UUID id) {
+        Parent p = parentRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Parent with the id ("+id+") not found."));
+
+        return new ParentResponse(p.getParentId(),
+                p.getName(),
+                p.getSurname(),
+                p.getEmail(),
+                p.getPhoneNumber());
     }
 }
