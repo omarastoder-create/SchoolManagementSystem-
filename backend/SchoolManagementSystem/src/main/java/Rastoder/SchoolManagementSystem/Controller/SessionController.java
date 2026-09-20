@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -32,5 +33,13 @@ public class SessionController {
     public ResponseEntity<List<SessionResponse>> getAllSessions(){
         List<SessionResponse> listOfAllSessions = sessionService.getListOfAllSession();
         return ResponseEntity.status(HttpStatus.OK).body(listOfAllSessions);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SessionResponse> updateSessionDescription(@PathVariable UUID id ,
+                                                                    @RequestBody SessionRequest request){
+        SessionResponse response =  sessionService.updateSessionDescription(id,request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
     }
 }

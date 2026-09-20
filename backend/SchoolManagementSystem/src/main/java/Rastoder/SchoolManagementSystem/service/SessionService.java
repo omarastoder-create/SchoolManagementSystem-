@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
 @Service
 public class SessionService {
 
@@ -55,5 +56,23 @@ public class SessionService {
                         session.getContent(),
                         session.getStudentGroup() != null ? session.getStudentGroup().getGroupId() : null
                 )).collect(Collectors.toList());
+    }
+
+    public SessionResponse updateSessionDescription(UUID id, SessionRequest request) {
+        Session session = sessionRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Session not found"));
+
+        if (request.content() != null){
+            session.setContent(request.content());
+        }
+
+        Session savedSession = sessionRepository.save(session);
+
+        return new SessionResponse(
+                savedSession.getSessionId(),
+                savedSession.getStartDate(),
+                savedSession.getContent(),
+                savedSession.getStudentGroup().getGroupId());
+
     }
 }
