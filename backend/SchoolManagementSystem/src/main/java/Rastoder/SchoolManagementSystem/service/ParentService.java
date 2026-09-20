@@ -48,4 +48,27 @@ public class ParentService {
                 p.getEmail(),
                 p.getPhoneNumber());
     }
+
+    public ParentResponse updateParentWithId(UUID id, ParentRequest request) {
+        Parent p = parentRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Parent with the id ("+id+") not found."));
+
+        if (request.email() != null){
+            p.setEmail(request.email());
+        }
+
+        if (request.phoneNumber()!= null){
+            p.setPhoneNumber(request.phoneNumber());
+        }
+
+        Parent saved = parentRepository.save(p);
+
+        return new ParentResponse(
+                saved.getParentId(),
+                saved.getName(),
+                saved.getSurname(),
+                saved.getEmail(),
+                saved.getPhoneNumber()
+        );
+    }
 }

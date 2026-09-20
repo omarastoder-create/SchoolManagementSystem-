@@ -31,4 +31,11 @@ public class ParentController {
         ParentResponse response = parentService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ParentResponse> updateParentWithId(
+            @PathVariable UUID id , @RequestBody ParentRequest request){
+        ParentResponse response = parentService.updateParentWithId(id,request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
