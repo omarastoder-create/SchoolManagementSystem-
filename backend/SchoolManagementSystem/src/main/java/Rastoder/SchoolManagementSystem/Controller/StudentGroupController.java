@@ -3,11 +3,8 @@ package Rastoder.SchoolManagementSystem.Controller;
 
 import Rastoder.SchoolManagementSystem.dto.StudentGroupRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
-import Rastoder.SchoolManagementSystem.model.Student;
-import Rastoder.SchoolManagementSystem.model.StudentGroup;
 import Rastoder.SchoolManagementSystem.service.StudentGroupService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +29,7 @@ public class StudentGroupController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("{groupId}/{studentId}")
+    @PutMapping("{groupId}/student/{studentId}")
     public ResponseEntity<Void> addStudentToGroup(@PathVariable UUID groupId,
                                                   @PathVariable UUID studentId){
         studentGroupService.addStudentToStudentGroup(studentId,groupId);
@@ -50,4 +47,17 @@ public class StudentGroupController {
         StudentGroupResponse response = studentGroupService.getStudentGroupByService(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    // Controller Layer
+    @PutMapping("/{groupId}/teacher/{teacherId}")
+    public ResponseEntity<StudentGroupResponse> assignNewTeacher(
+            @PathVariable UUID groupId,
+            @PathVariable UUID teacherId) {
+
+        StudentGroupResponse response = studentGroupService.assignTeacher(groupId, teacherId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+
 }

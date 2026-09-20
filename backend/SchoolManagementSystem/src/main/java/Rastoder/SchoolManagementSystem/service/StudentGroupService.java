@@ -124,4 +124,27 @@ public class StudentGroupService {
                     ) ;
     }
 
+
+    public StudentGroupResponse assignTeacher(UUID groupId, UUID teacherId) {
+
+        StudentGroup group = studentGroupRepository.findById(groupId).orElseThrow(() ->
+                new RuntimeException("Group not found"));
+
+        Teacher newTeacher = teacherRepository.findById(teacherId).orElseThrow(() ->
+                new RuntimeException("Teacher not found"));
+
+        group.setTeacher(newTeacher);
+
+        StudentGroup savedGroup = studentGroupRepository.save(group);
+        return new StudentGroupResponse(
+                savedGroup.getGroupId(),
+                savedGroup.getRoom(),
+                savedGroup.getSessions()!= null ? savedGroup.getSessions()
+                .stream().map(Session::getSessionId).collect(Collectors.toSet()):new HashSet<>(),
+                savedGroup.getTeacher().getTeacherId(),
+                savedGroup.getStudents()!= null ? savedGroup.getStudents()
+                        .stream().map(Student::getStudentId).collect(Collectors.toSet()):new HashSet<>());
+    }
+
+
 }
