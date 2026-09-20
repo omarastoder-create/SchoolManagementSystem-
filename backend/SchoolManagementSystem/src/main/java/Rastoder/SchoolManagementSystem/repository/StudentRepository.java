@@ -12,5 +12,5 @@ import java.util.UUID;
 public interface StudentRepository extends JpaRepository<Student, UUID> {
 
     List<Student> findByIsActiveTrue();
-    List<Student> findbyIsActiveFalse();
+    List<Student> findByIsActiveFalse();
 }

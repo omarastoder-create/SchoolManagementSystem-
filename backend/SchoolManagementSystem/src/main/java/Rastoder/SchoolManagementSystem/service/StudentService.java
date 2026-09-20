@@ -153,7 +153,7 @@ public class StudentService {
 
     public List<StudentResponse> getAllNonActiveStudents() {
 
-        return studentRepository.findbyIsActiveFalse().stream().map(student ->
+        return studentRepository.findByIsActiveFalse().stream().map(student ->
                         new StudentResponse(student.getStudentId(),
                                 student.getFirstName(),
                                 student.getLastName(),
