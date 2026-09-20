@@ -68,4 +68,34 @@ public class TeacherService {
                 te.getDescription(),
                 te.getLanguages());
     }
+
+    public TeacherResponse updateTeacherWithId(UUID id, TeacherRequest request) {
+        Teacher te = teacherRepository.findById(id).orElseThrow(()->
+                new RuntimeException("The UUID doesn't match a Teacher."));
+
+        // 2. Mutate (The Smart Update)
+        if (request.description() != null) {
+            te.setDescription(request.description());
+        }
+
+        if (request.languages() != null) {
+            te.setLanguages(request.languages());
+        }
+
+        if (request.phoneNumber() != null) {
+            te.setPhoneNumber(request.phoneNumber());
+        }
+
+
+        Teacher savedTeacher = teacherRepository.save(te);
+
+        return new TeacherResponse(
+                savedTeacher.getTeacherId(),
+                savedTeacher.getFirstName(),
+                savedTeacher.getFamilyName(),
+                savedTeacher.getPhoneNumber(),
+                savedTeacher.getDescription(),
+                savedTeacher.getLanguages()
+        );
+    }
 }

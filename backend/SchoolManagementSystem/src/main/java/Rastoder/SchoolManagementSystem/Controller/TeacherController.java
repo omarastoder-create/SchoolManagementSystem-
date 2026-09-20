@@ -41,4 +41,11 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.OK).body(t);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TeacherResponse> updateTeacherWithId
+            (@PathVariable UUID id , @RequestBody TeacherRequest request){
+        TeacherResponse t = teacherService.updateTeacherWithId(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(t);
+    }
+
 }
