@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 @Service
 public class StudentService {
 
-    private final StudentRepository studentRepository ;
+    private final StudentRepository studentRepository;
     private final ParentRepository parentRepository;
 
-    public StudentService(StudentRepository studentRepository,ParentRepository parentRepository) {
+    public StudentService(StudentRepository studentRepository, ParentRepository parentRepository) {
         this.studentRepository = studentRepository;
         this.parentRepository = parentRepository;
     }
@@ -70,26 +70,25 @@ public class StudentService {
 
     public List<StudentResponse> getAllStudents() {
         List<StudentResponse> responses = studentRepository.findAll().stream().map(student ->
-                new StudentResponse(student.getStudentId(),
-                        student.getFirstName(),
-                        student.getLastName(),
-                        student.getBirthDate(),
-                        student.getLevel(),
-                        student.getLanguage(),
-                        student.getParents().stream().map(parent -> parent.getParentId())
-                                .collect(Collectors.toSet())))
+                        new StudentResponse(student.getStudentId(),
+                                student.getFirstName(),
+                                student.getLastName(),
+                                student.getBirthDate(),
+                                student.getLevel(),
+                                student.getLanguage(),
+                                student.getParents().stream().map(parent -> parent.getParentId())
+                                        .collect(Collectors.toSet())))
                 .collect(Collectors.toList());
         return responses;
     }
 
     public StudentResponse getStudentById(UUID id) {
         Student s = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student with the id "+id
-                        +" not found "));
+                .orElseThrow(() -> new RuntimeException("Student with the id " + id
+                        + " not found "));
 
-        //getting the parents to a Set<UUID>
-        Set<UUID> parents =s.getParents().stream()
-                .map(parent ->parent.getParentId())
+        Set<UUID> parents = s.getParents().stream()
+                .map(Parent::getParentId)
                 .collect(Collectors.toSet());
 
         return new StudentResponse(s.getStudentId(),
@@ -99,6 +98,29 @@ public class StudentService {
                 s.getLevel(),
                 s.getLanguage(),
                 parents
-                );
+        );
+    }
+
+    public StudentResponse addStudentLevel(UUID id) {
+        Student s = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student with the id " + id + " not found "));
+
+        s.setLevel(s.getLevel() + 1);
+
+        Student saved = studentRepository.save(s);
+
+        Set<UUID> parents = saved.getParents() != null ? saved.getParents().stream().map(
+                Parent::getParentId
+        ).collect(Collectors.toSet()) : new HashSet<>();
+
+        return new StudentResponse(
+                saved.getStudentId(),
+                saved.getFirstName(),
+                saved.getLastName(),
+                saved.getBirthDate(),
+                saved.getLevel(),
+                saved.getLanguage(),
+                parents
+        );
     }
 }

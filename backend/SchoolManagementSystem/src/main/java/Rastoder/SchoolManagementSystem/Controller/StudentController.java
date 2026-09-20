@@ -40,4 +40,11 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PutMapping("/addGrade/{id}")
+    public
+    ResponseEntity<StudentResponse> addLevelToStudent(@PathVariable UUID id){
+        StudentResponse response = studentService.addStudentLevel(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }
