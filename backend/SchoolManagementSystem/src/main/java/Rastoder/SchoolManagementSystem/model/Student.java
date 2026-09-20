@@ -1,6 +1,7 @@
 package Rastoder.SchoolManagementSystem.model;
 
 import jakarta.persistence.*;
+import jdk.jfr.BooleanFlag;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,9 @@ public class Student {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Language language;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
 
     // FIX: Changed from @ManyToOne to @ManyToMany for multiple parents
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

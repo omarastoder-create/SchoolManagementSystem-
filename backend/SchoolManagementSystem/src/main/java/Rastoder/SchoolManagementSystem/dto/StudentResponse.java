@@ -12,7 +12,8 @@ public record StudentResponse(
         LocalDate birthDate,
         int level,
         Language language,
-        Set<UUID> parentIds
+        Set<UUID> parentIds,
+        boolean isActive
 
 ) {
 }

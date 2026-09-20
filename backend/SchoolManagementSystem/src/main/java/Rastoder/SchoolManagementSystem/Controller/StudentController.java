@@ -47,4 +47,16 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<StudentResponse> archiveStudentWithId(@PathVariable UUID id){
+        StudentResponse response = studentService.archiveStudentWithId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/alumni")
+    public ResponseEntity<List<StudentResponse>> getAllNonActiveStudents(){
+        List<StudentResponse> students = studentService.getAllNonActiveStudents();
+        return ResponseEntity.status(HttpStatus.OK).body(students);
+    }
+
 }
