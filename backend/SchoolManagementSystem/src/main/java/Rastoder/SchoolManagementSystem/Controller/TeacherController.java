@@ -31,7 +31,7 @@ public class TeacherController {
 
     @GetMapping
     public ResponseEntity<List<TeacherResponse>> getAllTeachers(){
-        List<TeacherResponse> responses = teacherService.getAllTeachers();
+        List<TeacherResponse> responses = teacherService.getAllActiveTeachers();
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
@@ -54,6 +54,11 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.OK).body(t);
     }
 
+    @GetMapping("/archived")
+    public ResponseEntity<List<TeacherResponse>> getAllInactiveTeachers(){
+        List<TeacherResponse> responses = teacherService.getAllInactiveTeachers();
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
 
 
 }

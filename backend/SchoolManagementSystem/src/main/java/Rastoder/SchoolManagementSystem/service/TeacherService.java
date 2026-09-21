@@ -4,8 +4,6 @@ import Rastoder.SchoolManagementSystem.dto.TeacherRequest;
 import Rastoder.SchoolManagementSystem.dto.TeacherResponse;
 import Rastoder.SchoolManagementSystem.model.Teacher;
 import Rastoder.SchoolManagementSystem.repository.TeacherRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,9 +36,9 @@ public class TeacherService {
 
     }
 
-    public List<TeacherResponse> getAllTeachers() {
+    public List<TeacherResponse> getAllActiveTeachers() {
 
-        return teacherRepository.findAll().stream()
+        return teacherRepository.findByIsActiveTrue().stream()
                 .map(this::getTeacherResponse).collect(Collectors.toList());
     }
 
@@ -92,5 +90,10 @@ public class TeacherService {
                 te.getDescription(),
                 te.getLanguages(),
                 te.isActive());
+    }
+
+    public List<TeacherResponse> getAllInactiveTeachers() {
+        return teacherRepository.findByIsActiveFalse().stream()
+                .map(this::getTeacherResponse).collect(Collectors.toList());
     }
 }
