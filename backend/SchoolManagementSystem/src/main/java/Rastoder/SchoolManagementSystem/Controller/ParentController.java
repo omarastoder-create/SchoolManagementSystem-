@@ -2,12 +2,15 @@ package Rastoder.SchoolManagementSystem.Controller;
 
 import Rastoder.SchoolManagementSystem.dto.ParentRequest;
 import Rastoder.SchoolManagementSystem.dto.ParentResponse;
+import Rastoder.SchoolManagementSystem.dto.StudentResponse;
 import Rastoder.SchoolManagementSystem.service.ParentService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,6 +21,7 @@ public class ParentController {
 
 
     public ParentController(ParentService parentService) {
+
         this.parentService = parentService;
     }
         @PostMapping
@@ -44,4 +48,11 @@ public class ParentController {
         ParentResponse response = parentService.setParentToUnactive(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/archived")
+    public ResponseEntity<List<ParentResponse>> getAllInactiveParents(){
+        List<ParentResponse> response = parentService.getAllInactiveParents();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }

@@ -6,7 +6,9 @@ import Rastoder.SchoolManagementSystem.model.Parent;
 import Rastoder.SchoolManagementSystem.repository.ParentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ParentService {
@@ -75,5 +77,12 @@ public class ParentService {
         p.setActive(false);
         Parent saved = parentRepository.save(p);
         return getParentResponse(saved);
+    }
+
+    public List<ParentResponse> getAllInactiveParents() {
+        List<Parent> allInactiveParents = parentRepository.findByIsActiveFalse();
+        return allInactiveParents.stream().map(
+                this::getParentResponse
+        ).collect(Collectors.toList());
     }
 }
