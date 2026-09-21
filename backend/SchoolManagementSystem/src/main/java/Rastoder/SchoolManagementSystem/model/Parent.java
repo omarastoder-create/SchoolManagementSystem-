@@ -37,6 +37,9 @@ public class Parent {
     @ManyToMany(mappedBy = "parents")
     private Set<Student> children = new HashSet<>();
 
+    @Column(nullable = false)
+    private boolean isActive=true;
+
     @Builder
     public Parent(String name, String surname, String email, String phoneNumber) {
         this.name = name;

@@ -11,6 +11,7 @@ public record TeacherResponse(
         String familyName,
         String phoneNumber,
         String description,
-        Set<Language> languages
+        Set<Language> languages,
+        boolean isActive
 ) {
 }

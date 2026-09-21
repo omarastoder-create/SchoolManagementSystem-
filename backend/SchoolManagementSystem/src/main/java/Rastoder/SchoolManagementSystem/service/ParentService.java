@@ -15,7 +15,19 @@ public class ParentService {
 
 
     public ParentService(ParentRepository parentRepository) {
+
         this.parentRepository = parentRepository;
+    }
+
+    private ParentResponse getParentResponse(Parent parent){
+        return new ParentResponse(
+                parent.getParentId(),
+                parent.getName(),
+                parent.getSurname(),
+                parent.getEmail(),
+                parent.getPhoneNumber(),
+                parent.isActive()
+        );
     }
 
     public ParentResponse createParent(ParentRequest request){
@@ -29,24 +41,14 @@ public class ParentService {
 
         Parent saved = parentRepository.save(parent);
 
-        return new ParentResponse(
-                saved.getParentId(),
-                saved.getName(),
-                saved.getSurname(),
-                saved.getEmail(),
-                saved.getPhoneNumber()
-        );
+        return getParentResponse(saved);
     }
 
     public ParentResponse findById(UUID id) {
         Parent p = parentRepository.findById(id).orElseThrow(() ->
                 new RuntimeException("Parent with the id ("+id+") not found."));
 
-        return new ParentResponse(p.getParentId(),
-                p.getName(),
-                p.getSurname(),
-                p.getEmail(),
-                p.getPhoneNumber());
+        return getParentResponse(p);
     }
 
     public ParentResponse updateParentWithId(UUID id, ParentRequest request) {
@@ -63,12 +65,15 @@ public class ParentService {
 
         Parent saved = parentRepository.save(p);
 
-        return new ParentResponse(
-                saved.getParentId(),
-                saved.getName(),
-                saved.getSurname(),
-                saved.getEmail(),
-                saved.getPhoneNumber()
-        );
+        return getParentResponse(saved);
+    }
+
+    public ParentResponse setParentToUnactive(UUID id) {
+        Parent p = parentRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Parent with the id ("+id+") not found."));
+
+        p.setActive(false);
+        Parent saved = parentRepository.save(p);
+        return getParentResponse(saved);
     }
 }

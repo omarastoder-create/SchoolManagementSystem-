@@ -40,7 +40,9 @@ public class TeacherService {
                 savedTeacher.getFamilyName(),
                 savedTeacher.getPhoneNumber(),
                 savedTeacher.getDescription(),
-                savedTeacher.getLanguages()
+                savedTeacher.getLanguages(),
+                savedTeacher.isActive()
+                // todo refactor the method to return TeacherResponse
         );
 
     }
@@ -53,7 +55,8 @@ public class TeacherService {
                 teacher.getFamilyName(),
                 teacher.getPhoneNumber(),
                 teacher.getDescription(),
-                teacher.getLanguages()
+                teacher.getLanguages(),
+                teacher.isActive()
         )).collect(Collectors.toList());
     }
 
@@ -66,7 +69,8 @@ public class TeacherService {
                 te.getFamilyName(),
                 te.getPhoneNumber(),
                 te.getDescription(),
-                te.getLanguages());
+                te.getLanguages(),
+                te.isActive());
     }
 
     public TeacherResponse updateTeacherWithId(UUID id, TeacherRequest request) {
@@ -95,7 +99,8 @@ public class TeacherService {
                 savedTeacher.getFamilyName(),
                 savedTeacher.getPhoneNumber(),
                 savedTeacher.getDescription(),
-                savedTeacher.getLanguages()
+                savedTeacher.getLanguages(),
+                savedTeacher.isActive()
         );
     }
 }

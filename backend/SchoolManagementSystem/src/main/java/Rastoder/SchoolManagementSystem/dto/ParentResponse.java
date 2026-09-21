@@ -7,6 +7,7 @@ public record ParentResponse(
         String name,
         String surname,
         String email,
-        String phoneNumber
+        String phoneNumber,
+        boolean isActive
 ) {
 }

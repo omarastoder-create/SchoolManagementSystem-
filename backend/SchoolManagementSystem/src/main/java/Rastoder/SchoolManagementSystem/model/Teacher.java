@@ -32,6 +32,9 @@ public class Teacher {
 
     private String description;
 
+    @Column(nullable = false)
+    private boolean isActive = true;
+
     @ElementCollection(targetClass = Language.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "Teacher_Languages", joinColumns = @JoinColumn(name = "teacher_id"))
     @Enumerated(EnumType.STRING)

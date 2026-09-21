@@ -38,4 +38,10 @@ public class ParentController {
         ParentResponse response = parentService.updateParentWithId(id,request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ParentResponse> setUnactiveParent(@PathVariable UUID id){
+        ParentResponse response = parentService.setParentToUnactive(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
