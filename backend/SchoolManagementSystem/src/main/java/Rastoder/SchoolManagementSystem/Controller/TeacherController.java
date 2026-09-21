@@ -48,6 +48,12 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.OK).body(t);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<TeacherResponse> updateTeacherToInactive(@PathVariable UUID id){
+        TeacherResponse t = teacherService.updateTeacherToInactive(id);
+        return ResponseEntity.status(HttpStatus.OK).body(t);
+    }
+
 
 
 }

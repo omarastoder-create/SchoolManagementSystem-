@@ -34,43 +34,21 @@ public class TeacherService {
 
         Teacher savedTeacher = teacherRepository.save(t);
 
-        return new TeacherResponse(
-                savedTeacher.getTeacherId(),
-                savedTeacher.getFirstName(),
-                savedTeacher.getFamilyName(),
-                savedTeacher.getPhoneNumber(),
-                savedTeacher.getDescription(),
-                savedTeacher.getLanguages(),
-                savedTeacher.isActive()
-                // todo refactor the method to return TeacherResponse
-        );
+        return getTeacherResponse(savedTeacher);
 
     }
 
     public List<TeacherResponse> getAllTeachers() {
 
-        return teacherRepository.findAll().stream().map(teacher -> new TeacherResponse(
-                teacher.getTeacherId(),
-                teacher.getFirstName(),
-                teacher.getFamilyName(),
-                teacher.getPhoneNumber(),
-                teacher.getDescription(),
-                teacher.getLanguages(),
-                teacher.isActive()
-        )).collect(Collectors.toList());
+        return teacherRepository.findAll().stream()
+                .map(this::getTeacherResponse).collect(Collectors.toList());
     }
 
     public TeacherResponse getTeacherById(UUID id) {
         Teacher te = teacherRepository.findById(id).orElseThrow(()->
                 new RuntimeException("The UUID doesn't match a Teacher."));
 
-        return new TeacherResponse(te.getTeacherId(),
-                te.getFirstName(),
-                te.getFamilyName(),
-                te.getPhoneNumber(),
-                te.getDescription(),
-                te.getLanguages(),
-                te.isActive());
+        return getTeacherResponse(te);
     }
 
     public TeacherResponse updateTeacherWithId(UUID id, TeacherRequest request) {
@@ -93,14 +71,26 @@ public class TeacherService {
 
         Teacher savedTeacher = teacherRepository.save(te);
 
-        return new TeacherResponse(
-                savedTeacher.getTeacherId(),
-                savedTeacher.getFirstName(),
-                savedTeacher.getFamilyName(),
-                savedTeacher.getPhoneNumber(),
-                savedTeacher.getDescription(),
-                savedTeacher.getLanguages(),
-                savedTeacher.isActive()
-        );
+        return getTeacherResponse(savedTeacher);
+    }
+
+    public TeacherResponse updateTeacherToInactive(UUID id) {
+        Teacher te = teacherRepository.findById(id).orElseThrow(()->
+                new RuntimeException("The UUID doesn't match a Teacher."));
+
+        te.setActive(false);
+        Teacher saved = teacherRepository.save(te);
+
+        return getTeacherResponse(saved);
+    }
+
+    private TeacherResponse getTeacherResponse(Teacher te){
+        return new TeacherResponse(te.getTeacherId(),
+                te.getFirstName(),
+                te.getFamilyName(),
+                te.getPhoneNumber(),
+                te.getDescription(),
+                te.getLanguages(),
+                te.isActive());
     }
 }
