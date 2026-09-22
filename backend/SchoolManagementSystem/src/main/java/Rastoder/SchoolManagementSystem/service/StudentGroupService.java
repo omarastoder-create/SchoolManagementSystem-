@@ -3,10 +3,7 @@ package Rastoder.SchoolManagementSystem.service;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
 import Rastoder.SchoolManagementSystem.dto.StudentResponse;
-import Rastoder.SchoolManagementSystem.model.Session;
-import Rastoder.SchoolManagementSystem.model.Student;
-import Rastoder.SchoolManagementSystem.model.StudentGroup;
-import Rastoder.SchoolManagementSystem.model.Teacher;
+import Rastoder.SchoolManagementSystem.model.*;
 import Rastoder.SchoolManagementSystem.repository.StudentGroupRepository;
 import Rastoder.SchoolManagementSystem.repository.StudentRepository;
 import Rastoder.SchoolManagementSystem.repository.TeacherRepository;
@@ -35,38 +32,34 @@ public class StudentGroupService {
     public StudentGroupResponse createStudentGroup(StudentGroupRequest request) {
 
         Teacher teacher = null;
-
         if (request.teacherId() != null) {
-            teacher = teacherRepository.getReferenceById(request.teacherId());
+            teacher = teacherRepository.findById(request.teacherId())
+                    .orElseThrow(() -> new RuntimeException("Teacher not found"));
+        }
+
+        Set<Student> students = new HashSet<>();
+        if (request.studentsIds() != null && !request.studentsIds().isEmpty()) {
+            students.addAll(studentRepository.findAllById(request.studentsIds()));
         }
 
         StudentGroup studentGroup = StudentGroup.builder()
                 .room(request.room())
                 .teacher(teacher)
+                .students(students)
                 .build();
 
-        StudentGroup saved = studentGroupRepository.save(studentGroup);
+        StudentGroup savedGroup = studentGroupRepository.save(studentGroup);
 
-        Set<UUID> sessionsIds = saved.getSessions() != null
-                ? saved.getSessions().stream()
-                .map(Session::getSessionId)
-                .collect(Collectors.toSet())
-                : new HashSet<>();
 
-        Set<UUID> studentsIds = saved.getStudents() != null
-                ? saved.getStudents().stream()
-                .map(Student::getStudentId)
-                .collect(Collectors.toSet())
-                : new HashSet<>();
+        if (!students.isEmpty()) {
+            for (Student student : students) {
+                student.setStudentGroup(savedGroup);
+            }
 
-        return new StudentGroupResponse(
-                saved.getGroupId(),
-                saved.getRoom(),
-                sessionsIds,
-                saved.getTeacher() != null ? saved.getTeacher().getTeacherId() : null,
-                studentsIds
-        );
+            studentRepository.saveAll(students);
+        }
 
+        return getStudentGroupResponse(savedGroup);
     }
 
     public void addStudentToStudentGroup(UUID studentId, UUID studentGroupId) throws EntityNotFoundException {
@@ -80,48 +73,13 @@ public class StudentGroupService {
     public List<StudentGroupResponse> getAllStudentGroups() {
         List<StudentGroup> listOfSG = studentGroupRepository.findAll();
 
-        return listOfSG.stream().map(studentGroup -> {
-
-            // 1. Safely extract Session IDs
-            Set<UUID> sessionIds = (studentGroup.getSessions() != null)
-                    ? studentGroup.getSessions().stream()
-                    .map(Session::getSessionId)
-                    .collect(Collectors.toSet())
-                    : new HashSet<>();
-
-            // 2. Safely extract Student IDs
-            Set<UUID> studentIds = (studentGroup.getStudents() != null)
-                    ? studentGroup.getStudents().stream()
-                    .map(Student::getStudentId)
-                    .collect(Collectors.toSet())
-                    : new HashSet<>();
-
-            // 3. Construct the response safely (Make sure the order matches your DTO constructor!)
-            return new StudentGroupResponse(
-                    studentGroup.getGroupId(),
-                    studentGroup.getRoom(),
-                    sessionIds,
-                    // Safely check if the teacher exists before grabbing the ID
-                    studentGroup.getTeacher() != null ? studentGroup.getTeacher().getTeacherId() : null,
-                    studentIds
-
-            );
-
-        }).collect(Collectors.toList());
+        return listOfSG.stream().map(this::getStudentGroupResponse).collect(Collectors.toList());
     }
 
     public StudentGroupResponse getStudentGroupByService(UUID id) {
         StudentGroup response = studentGroupRepository.findById(id).orElseThrow(() -> new RuntimeException("" +
                 "StudentGroupId does not exist"));
-            return new StudentGroupResponse(
-                    response.getGroupId(),
-                    response.getRoom(),
-                    response.getSessions() != null ? response.getSessions().stream().map(
-                            Session::getSessionId).collect(Collectors.toSet()):null,
-                    response.getTeacher() != null ? response.getTeacher().getTeacherId() : null ,
-                    response.getStudents() != null ? response.getStudents().stream().map(
-                            Student::getStudentId).collect(Collectors.toSet()) : new HashSet<>()
-                    ) ;
+            return getStudentGroupResponse(response);
     }
 
 
@@ -136,15 +94,18 @@ public class StudentGroupService {
         group.setTeacher(newTeacher);
 
         StudentGroup savedGroup = studentGroupRepository.save(group);
-        return new StudentGroupResponse(
-                savedGroup.getGroupId(),
-                savedGroup.getRoom(),
-                savedGroup.getSessions()!= null ? savedGroup.getSessions()
-                .stream().map(Session::getSessionId).collect(Collectors.toSet()):new HashSet<>(),
-                savedGroup.getTeacher().getTeacherId(),
-                savedGroup.getStudents()!= null ? savedGroup.getStudents()
-                        .stream().map(Student::getStudentId).collect(Collectors.toSet()):new HashSet<>());
+        return getStudentGroupResponse(savedGroup);
     }
 
-
+    private StudentGroupResponse getStudentGroupResponse(StudentGroup response){
+        return new StudentGroupResponse(
+                response.getGroupId(),
+                response.getRoom(),
+                response.getSessions() != null ? response.getSessions().stream().map(
+                        Session::getSessionId).collect(Collectors.toSet()):null,
+                response.getTeacher() != null ? response.getTeacher().getTeacherId() : null ,
+                response.getStudents() != null ? response.getStudents().stream().map(
+                        Student::getStudentId).collect(Collectors.toSet()) : new HashSet<>()
+        ) ;
+    }
 }

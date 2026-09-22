@@ -50,36 +50,12 @@ public class StudentService {
 
         Student saved = studentRepository.save(s);
 
-
-        Set<UUID> savedParentIds = saved.getParents().stream()
-                .map(Parent::getParentId)
-                .collect(Collectors.toSet());
-
-
-        return new StudentResponse(
-                saved.getStudentId(),
-                saved.getFirstName(),
-                saved.getLastName(),
-                saved.getBirthDate(),
-                saved.getLevel(),
-                saved.getLanguage(),
-                savedParentIds,
-                saved.isActive()
-        );
+        return getStudentResponse(saved);
     }
 
 
     public List<StudentResponse> getAllStudents() {
-        return studentRepository.findByIsActiveTrue().stream().map(student ->
-                        new StudentResponse(student.getStudentId(),
-                                student.getFirstName(),
-                                student.getLastName(),
-                                student.getBirthDate(),
-                                student.getLevel(),
-                                student.getLanguage(),
-                                student.getParents().stream().map(Parent::getParentId)
-                                        .collect(Collectors.toSet()),
-                                student.isActive()))
+        return studentRepository.findByIsActiveTrue().stream().map(this::getStudentResponse)
                 .collect(Collectors.toList());
     }
 
@@ -87,6 +63,45 @@ public class StudentService {
         Student s = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student with the id " + id
                         + " not found "));
+        return getStudentResponse(s);
+    }
+
+    public StudentResponse addStudentLevel(UUID id) {
+        Student s = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student with the id " + id + " not found "));
+
+        s.setLevel(s.getLevel() + 1);
+
+        Student saved = studentRepository.save(s);
+
+        return getStudentResponse(saved);
+    }
+
+    public StudentResponse archiveStudentWithId(UUID id) {
+        Student s = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student with the id " + id + " not found "));
+
+        s.setActive(false);
+
+        Student saved = studentRepository.save(s);
+
+        return getStudentResponse(saved);
+    }
+
+    public List<StudentResponse> getAllNonActiveStudents() {
+
+        return studentRepository.findByIsActiveFalse().stream().map(this::getStudentResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<StudentResponse> getAllStudentsWithGroupdId(UUID id) {
+
+        List<Student> allStudents = studentRepository.findActiveStudentByGroupId(id);
+        return allStudents.stream().map(this::getStudentResponse).collect(Collectors.toList());
+
+    }
+
+    private StudentResponse getStudentResponse(Student s){
 
         Set<UUID> parents = s.getParents().stream()
                 .map(Parent::getParentId)
@@ -99,71 +114,7 @@ public class StudentService {
                 s.getLevel(),
                 s.getLanguage(),
                 parents,
-                s.isActive()
-        );
+                s.isActive());
     }
-
-    public StudentResponse addStudentLevel(UUID id) {
-        Student s = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student with the id " + id + " not found "));
-
-        s.setLevel(s.getLevel() + 1);
-
-        Student saved = studentRepository.save(s);
-
-        Set<UUID> parents = saved.getParents() != null ? saved.getParents().stream().map(
-                Parent::getParentId
-        ).collect(Collectors.toSet()) : new HashSet<>();
-
-        return new StudentResponse(
-                saved.getStudentId(),
-                saved.getFirstName(),
-                saved.getLastName(),
-                saved.getBirthDate(),
-                saved.getLevel(),
-                saved.getLanguage(),
-                parents,
-                saved.isActive()
-        );
-    }
-
-    public StudentResponse archiveStudentWithId(UUID id) {
-        Student s = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student with the id " + id + " not found "));
-
-        s.setActive(false);
-
-        Student saved = studentRepository.save(s);
-
-        Set<UUID> parents = saved.getParents() != null ? saved.getParents().stream().map(
-                Parent::getParentId
-        ).collect(Collectors.toSet()) : new HashSet<>();
-
-        return new StudentResponse(
-                saved.getStudentId(),
-                saved.getFirstName(),
-                saved.getLastName(),
-                saved.getBirthDate(),
-                saved.getLevel(),
-                saved.getLanguage(),
-                parents,
-                saved.isActive()
-        );
-    }
-
-    public List<StudentResponse> getAllNonActiveStudents() {
-
-        return studentRepository.findByIsActiveFalse().stream().map(student ->
-                        new StudentResponse(student.getStudentId(),
-                                student.getFirstName(),
-                                student.getLastName(),
-                                student.getBirthDate(),
-                                student.getLevel(),
-                                student.getLanguage(),
-                                student.getParents().stream().map(Parent::getParentId)
-                                        .collect(Collectors.toSet()),
-                                student.isActive()))
-                .collect(Collectors.toList());
-    }
-    }
+}
 

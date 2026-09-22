@@ -59,4 +59,10 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(students);
     }
 
+    @GetMapping("/group/{id}")
+    public ResponseEntity<List<StudentResponse>> getAllStudentsInGroup(@PathVariable UUID id){
+        List<StudentResponse> allStudents = studentService.getAllStudentsWithGroupdId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(allStudents);
+    }
+
 }

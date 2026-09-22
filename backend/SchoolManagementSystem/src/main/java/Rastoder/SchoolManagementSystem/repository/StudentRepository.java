@@ -2,6 +2,8 @@ package Rastoder.SchoolManagementSystem.repository;
 
 import Rastoder.SchoolManagementSystem.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -13,4 +15,7 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
 
     List<Student> findByIsActiveTrue();
     List<Student> findByIsActiveFalse();
+
+    @Query("SELECT s FROM StudentGroup sg JOIN sg.students s WHERE sg.groupId = :id AND s.isActive = true")
+    List<Student> findActiveStudentByGroupId(@Param("id") UUID id);
 }
