@@ -3,6 +3,7 @@ package Rastoder.SchoolManagementSystem.Controller;
 
 import Rastoder.SchoolManagementSystem.dto.StudentGroupRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
+import Rastoder.SchoolManagementSystem.model.StudentGroup;
 import Rastoder.SchoolManagementSystem.service.StudentGroupService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,14 @@ public class StudentGroupController {
         StudentGroupResponse response = studentGroupService.assignTeacher(groupId, teacherId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/teacher/{id}")
+    public ResponseEntity<List<StudentGroupResponse>> getAllStudentGroupsForTeacher(
+            @PathVariable UUID id){
+        List<StudentGroupResponse> listOfStudentGroups = studentGroupService.getStudentGroupByTeacherId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(listOfStudentGroups);
+    }
+
 
 
 

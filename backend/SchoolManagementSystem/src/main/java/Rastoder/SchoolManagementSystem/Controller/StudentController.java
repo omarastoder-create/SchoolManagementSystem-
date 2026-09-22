@@ -2,6 +2,7 @@ package Rastoder.SchoolManagementSystem.Controller;
 
 import Rastoder.SchoolManagementSystem.dto.StudentRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentResponse;
+import Rastoder.SchoolManagementSystem.model.Language;
 import Rastoder.SchoolManagementSystem.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,12 @@ public class StudentController {
     @GetMapping("/group/{id}")
     public ResponseEntity<List<StudentResponse>> getAllStudentsInGroup(@PathVariable UUID id){
         List<StudentResponse> allStudents = studentService.getAllStudentsWithGroupdId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(allStudents);
+    }
+
+    @GetMapping("/language/{language}")
+    public ResponseEntity<List<StudentResponse>> getAllStudenWithLanguage(@PathVariable Language language){
+        List<StudentResponse> allStudents = studentService.getAllStudentsWithLanguage(language);
         return ResponseEntity.status(HttpStatus.OK).body(allStudents);
     }
 

@@ -108,4 +108,9 @@ public class StudentGroupService {
                         Student::getStudentId).collect(Collectors.toSet()) : new HashSet<>()
         ) ;
     }
+
+    public List<StudentGroupResponse> getStudentGroupByTeacherId(UUID id) {
+        return studentGroupRepository.findByTeacher_TeacherId(id)
+                .stream().map(this::getStudentGroupResponse).collect(Collectors.toList());
+    }
 }

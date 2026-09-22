@@ -2,6 +2,7 @@ package Rastoder.SchoolManagementSystem.service;
 
 import Rastoder.SchoolManagementSystem.dto.StudentRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentResponse;
+import Rastoder.SchoolManagementSystem.model.Language;
 import Rastoder.SchoolManagementSystem.model.Parent;
 import Rastoder.SchoolManagementSystem.model.Student;
 import Rastoder.SchoolManagementSystem.repository.ParentRepository;
@@ -115,6 +116,11 @@ public class StudentService {
                 s.getLanguage(),
                 parents,
                 s.isActive());
+    }
+
+    public List<StudentResponse> getAllStudentsWithLanguage(Language language) {
+        return studentRepository.findByLanguageAndIsActiveTrue(language)
+                .stream().map(this::getStudentResponse).collect(Collectors.toList());
     }
 }
 
