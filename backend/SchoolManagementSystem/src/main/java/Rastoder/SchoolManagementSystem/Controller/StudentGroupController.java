@@ -54,7 +54,6 @@ public class StudentGroupController {
     public ResponseEntity<StudentGroupResponse> assignNewTeacher(
             @PathVariable UUID groupId,
             @PathVariable UUID teacherId) {
-
         StudentGroupResponse response = studentGroupService.assignTeacher(groupId, teacherId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
