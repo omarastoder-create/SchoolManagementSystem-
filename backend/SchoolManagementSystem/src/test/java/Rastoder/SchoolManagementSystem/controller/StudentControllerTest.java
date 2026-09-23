@@ -1,9 +1,11 @@
 package Rastoder.SchoolManagementSystem.controller;
 
 import Rastoder.SchoolManagementSystem.Controller.StudentController;
+import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
 import Rastoder.SchoolManagementSystem.dto.StudentRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentResponse;
 import Rastoder.SchoolManagementSystem.model.Language;
+import Rastoder.SchoolManagementSystem.model.Room;
 import Rastoder.SchoolManagementSystem.service.StudentService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -126,5 +129,97 @@ public class StudentControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/students/addGrade/"+studentId))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.level").value(3));
+    }
+
+    @Test
+    void GetStudentById() throws Exception {
+        UUID studentId = UUID.randomUUID();
+
+        StudentResponse mockResponse = new StudentResponse(
+                studentId,
+                "Joe",
+                "Doe",
+                LocalDate.of(2010, 5, 15),
+                3,
+                Language.BOSNIAN,
+                new HashSet<>(),
+                true
+        );
+
+        Mockito.when(studentService.getStudentById(studentId)).thenReturn(mockResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/students/"+studentId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.studentId").value(studentId.toString()));
+    }
+
+    @Test
+    void getAllNonActiveStudents() throws Exception{
+        UUID studentId = UUID.randomUUID();
+
+        StudentResponse mockResponse = new StudentResponse(
+                studentId,
+                "Joe",
+                "Doe",
+                LocalDate.of(2010, 5, 15),
+                3,
+                Language.BOSNIAN,
+                new HashSet<>(),
+                false
+        );
+
+        Mockito.when(studentService.getAllNonActiveStudents()).thenReturn(List.of(mockResponse));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/students/alumni"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].isActive").value(false));
+
+    }
+
+    @Test
+    void shouldGetAllStudentsInGroup() throws Exception {
+        // Arrange
+        UUID groupId = UUID.randomUUID();
+        UUID studentId = UUID.randomUUID();
+
+        StudentResponse mockResponse = new StudentResponse(
+                studentId,
+                "Jo",
+                "Thiel",
+                LocalDate.of(2010, 5, 15),
+                3,
+                Language.BOSNIAN,
+                new HashSet<>(),
+                true
+        );
+
+        Mockito.when(studentService.getAllStudentsWithGroupdId(groupId)).thenReturn(List.of(mockResponse));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/students/group/"+groupId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].firstName").value("Jo"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].studentId").value(studentId.toString()));
+    }
+
+    @Test
+    void getAllStudentsWithLanguage() throws Exception {
+        UUID studentId = UUID.randomUUID();
+        Language language = Language.BOSNIAN;
+        StudentResponse mockResponse = new StudentResponse(
+                studentId,
+                "Jo",
+                "Thiel",
+                LocalDate.of(2010, 5, 15),
+                3,
+                Language.BOSNIAN,
+                new HashSet<>(),
+                true
+        );
+
+        Mockito.when(studentService.getAllStudentsWithLanguage(language)).thenReturn(List.of(mockResponse));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/students/language/"+language))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].language").value(Language.BOSNIAN.toString()));
     }
 }
