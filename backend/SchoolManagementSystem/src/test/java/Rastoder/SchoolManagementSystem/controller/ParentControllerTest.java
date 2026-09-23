@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
 import java.util.UUID;
 
 @WebMvcTest(ParentController.class)
@@ -84,5 +85,77 @@ public class ParentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isActive").value(false));
     }
 
+    @Test
+    void getParentWithId() throws Exception {
+        UUID parentId = UUID.randomUUID();
 
+        ParentResponse mockResponse =  new ParentResponse(
+                parentId,
+                "Ernad",
+                "Rastoder",
+                "ernad@mail.cool",
+                "6666666567",
+                false
+        );
+
+        Mockito.when(parentService.findById(parentId)).thenReturn(mockResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/parents/"+parentId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.
+                        jsonPath("$.email").value("ernad@mail.cool"))
+                .andExpect(MockMvcResultMatchers.
+                        jsonPath("$.parentId").value(parentId.toString()));;
+    }
+
+
+    @Test
+    void updateParentWithId() throws Exception {
+        UUID parentId = UUID.randomUUID();
+
+        ParentResponse mockResponse =  new ParentResponse(
+                parentId,
+                "Ernad",
+                "Rastoder",
+                "ernad@mail.cool",
+                "6666666567",
+                true
+        );
+
+        ParentRequest mockRequest = new ParentRequest(
+                "Ernad",
+                "Rastoder",
+                "ernad@mail.cool",
+                "6666666567"
+        );
+
+        Mockito.when(parentService.updateParentWithId(parentId,mockRequest)).thenReturn(mockResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/parents/" + parentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockRequest)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.parentId").value(parentId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("ernad@mail.cool"));
+    }
+
+    @Test
+    void getAllInactiveParents() throws Exception {
+        UUID parentId = UUID.randomUUID();
+
+        ParentResponse mockResponse =  new ParentResponse(
+                parentId,
+                "Ernad",
+                "Rastoder",
+                "ernad@mail.cool",
+                "6666666567",
+                false
+        );
+        Mockito.when(parentService.getAllInactiveParents()).thenReturn(List.of(mockResponse));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/parents/archived"))
+                .andExpect(MockMvcResultMatchers.status().isOk()) // this is why we do it
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].isActive").value(false))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].parentId").value(parentId.toString()));
+    }
 }
