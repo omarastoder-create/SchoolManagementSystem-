@@ -1,9 +1,8 @@
-package Rastoder.SchoolManagementSystem.Controller;
+package Rastoder.SchoolManagementSystem.controller;
 
 
 import Rastoder.SchoolManagementSystem.dto.StudentGroupRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
-import Rastoder.SchoolManagementSystem.model.StudentGroup;
 import Rastoder.SchoolManagementSystem.service.StudentGroupService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

@@ -1,11 +1,8 @@
 package Rastoder.SchoolManagementSystem.controller;
 
-import Rastoder.SchoolManagementSystem.Controller.StudentController;
-import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
 import Rastoder.SchoolManagementSystem.dto.StudentRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentResponse;
 import Rastoder.SchoolManagementSystem.model.Language;
-import Rastoder.SchoolManagementSystem.model.Room;
 import Rastoder.SchoolManagementSystem.service.StudentService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;

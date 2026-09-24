@@ -1,6 +1,5 @@
 package Rastoder.SchoolManagementSystem.controller;
 
-import Rastoder.SchoolManagementSystem.Controller.TeacherController;
 import Rastoder.SchoolManagementSystem.dto.TeacherRequest;
 import Rastoder.SchoolManagementSystem.dto.TeacherResponse;
 import Rastoder.SchoolManagementSystem.model.Language;
