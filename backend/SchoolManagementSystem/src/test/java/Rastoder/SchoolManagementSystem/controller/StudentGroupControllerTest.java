@@ -1,6 +1,5 @@
 package Rastoder.SchoolManagementSystem.controller;
 
-import Rastoder.SchoolManagementSystem.Controller.StudentGroupController;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
 import Rastoder.SchoolManagementSystem.model.Room;

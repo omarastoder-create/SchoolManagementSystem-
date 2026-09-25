@@ -1,6 +1,5 @@
 package Rastoder.SchoolManagementSystem.controller;
 
-import Rastoder.SchoolManagementSystem.Controller.SessionController;
 import Rastoder.SchoolManagementSystem.dto.SessionRequest;
 import Rastoder.SchoolManagementSystem.dto.SessionResponse;
 import Rastoder.SchoolManagementSystem.service.SessionService;

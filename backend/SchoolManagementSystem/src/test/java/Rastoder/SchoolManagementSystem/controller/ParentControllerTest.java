@@ -1,6 +1,5 @@
 package Rastoder.SchoolManagementSystem.controller;
 
-import Rastoder.SchoolManagementSystem.Controller.ParentController;
 import Rastoder.SchoolManagementSystem.dto.ParentRequest;
 import Rastoder.SchoolManagementSystem.dto.ParentResponse;
 import Rastoder.SchoolManagementSystem.service.ParentService;

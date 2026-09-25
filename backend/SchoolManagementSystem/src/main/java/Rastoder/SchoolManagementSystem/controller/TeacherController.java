@@ -1,4 +1,4 @@
-package Rastoder.SchoolManagementSystem.Controller;
+package Rastoder.SchoolManagementSystem.controller;
 
 import Rastoder.SchoolManagementSystem.dto.TeacherRequest;
 import Rastoder.SchoolManagementSystem.dto.TeacherResponse;
