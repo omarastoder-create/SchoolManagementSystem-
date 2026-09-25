@@ -21,7 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 public class TeacherServiceTest {
@@ -46,6 +48,8 @@ public class TeacherServiceTest {
                 .description("Cool dude")
                 .languages(Set.of(Language.BOSNIAN))
                 .build();
+
+        dummyTeacher.setTeacherId(UUID.randomUUID());
     }
 
     @Test
@@ -94,5 +98,18 @@ public class TeacherServiceTest {
         verify(teacherRepository).findByIsActiveTrue();
     }
 
+
+    @Test
+    void getTeacherById_shouldReturnTeacherById(){
+        //Arrange
+        UUID target = dummyTeacher.getTeacherId();
+        when(teacherRepository.findById(target)).thenReturn(Optional.of(dummyTeacher));
+        //Act
+        TeacherResponse response = underTest.getTeacherById(target);
+        //Assert
+        assertThat(response.teacherId()).isEqualTo(target);
+        assertThat(response.firstName()).isEqualTo("Kenan");
+        verify(teacherRepository).findById(target);
+    }
 
 }
