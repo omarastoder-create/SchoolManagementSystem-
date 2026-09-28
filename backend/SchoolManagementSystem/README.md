@@ -154,9 +154,9 @@ The presentation layer is covered with **100% isolated slice tests** using `@Web
 
 ---
 
-### 📍 Phase 3: Automated Quality Engineering & CI/CD (Planned ⚪)
+### 📍 Phase 3: Automated Quality Engineering & CI/CD (In Progress 🟡)
 * [ ] **Automated Code Coverage (JaCoCo):** Enforce strict coverage thresholds (>80% instruction and branch coverage) during `mvn verify`, failing builds on regression.
-* [ ] **Static Code Analysis (SonarQube):** Automated detection of code smells, cyclomatic complexity, security vulnerabilities, and technical debt.
+* [x] **Static Code Analysis (SonarQube):** Automated detection of code smells, cyclomatic complexity, security vulnerabilities, and technical debt.
 * [ ] **GitHub Actions Quality Gate:** Fully automated CI pipeline executing build, JaCoCo report generation, and Sonar analysis on every Pull Request.
 
 ---
