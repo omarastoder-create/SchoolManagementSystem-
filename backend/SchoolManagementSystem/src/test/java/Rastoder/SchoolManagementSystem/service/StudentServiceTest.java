@@ -1,7 +1,6 @@
 package Rastoder.SchoolManagementSystem.service;
 
 
-import Rastoder.SchoolManagementSystem.dto.ParentResponse;
 import Rastoder.SchoolManagementSystem.dto.StudentRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentResponse;
 import Rastoder.SchoolManagementSystem.model.*;
@@ -9,7 +8,6 @@ import Rastoder.SchoolManagementSystem.repository.ParentRepository;
 import Rastoder.SchoolManagementSystem.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -26,7 +24,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StudentServiceController {
+public class StudentServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
