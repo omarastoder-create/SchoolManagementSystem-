@@ -122,7 +122,7 @@ public class StudentGroupControllerTest {
                 Set.of(studentId)
         );
 
-        Mockito.when(studentGroupService.getStudentGroupByService(groupId)).thenReturn(mockResponse);
+        Mockito.when(studentGroupService.getStudentGroupById(groupId)).thenReturn(mockResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/studentGroups/" + groupId))
                 .andExpect(MockMvcResultMatchers.status().isOk())
