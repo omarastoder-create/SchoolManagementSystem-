@@ -44,7 +44,7 @@ public class StudentGroupController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StudentGroupResponse> getStudentGroupById(@PathVariable UUID id){
-        StudentGroupResponse response = studentGroupService.getStudentGroupByService(id);
+        StudentGroupResponse response = studentGroupService.getStudentGroupById(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

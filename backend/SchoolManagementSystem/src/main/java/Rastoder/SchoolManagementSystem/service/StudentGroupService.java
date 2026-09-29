@@ -2,7 +2,6 @@ package Rastoder.SchoolManagementSystem.service;
 
 import Rastoder.SchoolManagementSystem.dto.StudentGroupRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
-import Rastoder.SchoolManagementSystem.dto.StudentResponse;
 import Rastoder.SchoolManagementSystem.model.*;
 import Rastoder.SchoolManagementSystem.repository.StudentGroupRepository;
 import Rastoder.SchoolManagementSystem.repository.StudentRepository;
@@ -76,7 +75,7 @@ public class StudentGroupService {
         return listOfSG.stream().map(this::getStudentGroupResponse).collect(Collectors.toList());
     }
 
-    public StudentGroupResponse getStudentGroupByService(UUID id) {
+    public StudentGroupResponse getStudentGroupById(UUID id) {
         StudentGroup response = studentGroupRepository.findById(id).orElseThrow(() -> new RuntimeException("" +
                 "StudentGroupId does not exist"));
             return getStudentGroupResponse(response);
