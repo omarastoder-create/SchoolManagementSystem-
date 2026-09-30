@@ -3,6 +3,7 @@ package Rastoder.SchoolManagementSystem.service;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupRequest;
 import Rastoder.SchoolManagementSystem.dto.StudentGroupResponse;
 import Rastoder.SchoolManagementSystem.dto.StudentRequest;
+import Rastoder.SchoolManagementSystem.exception.BusinessRuleViolationException;
 import Rastoder.SchoolManagementSystem.model.*;
 import Rastoder.SchoolManagementSystem.repository.StudentGroupRepository;
 import Rastoder.SchoolManagementSystem.repository.StudentRepository;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -237,6 +239,126 @@ class StudentGroupServiceTest {
         assertThat(first.teacherId()).isEqualTo(teacherId);
         assertThat(first.studentsIds()).containsExactly(studentId);
         assertThat(first.session()).isEmpty();
+    }
+
+    @Test
+    void createStudentGroup_shouldThrowException_whenCapacityExceedsMax() {
+        // Arrange
+        Set<UUID> studentIds = new HashSet<>();
+        for (int i = 0; i < 21; i++) {
+            studentIds.add(UUID.randomUUID());
+        }
+
+        StudentGroupRequest request = new StudentGroupRequest(Room.ROOM_1, teacherId, studentIds);
+
+        // Act & Assert
+        assertThatThrownBy(() -> underTest.createStudentGroup(request))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Group capacity can not exceed 20 students.");
+
+        verifyNoInteractions(studentGroupRepository);
+    }
+    @Test void createStudentGroup_shouldThrowException_whenStudentLanguageDoesNotMatchTeacher() {
+        dummyTeacher.setLanguages(Set.of(Language.LUXEMBOURGISH));
+        dummyStudent.setLanguage(Language.BOSNIAN);
+
+        Set<UUID> studentIds = Set.of(studentId);
+        StudentGroupRequest request = new StudentGroupRequest(Room.ROOM_1, teacherId, studentIds);
+
+        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(dummyTeacher));
+        when(studentRepository.findAllById(studentIds)).thenReturn(List.of(dummyStudent));
+
+        assertThatThrownBy(() -> underTest.createStudentGroup(request))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Each student must have the same language as the teacher");
+        verify(studentGroupRepository, never()).save(any());
+    }
+    @Test
+    void addStudentToStudentGroup_shouldThrowException_whenStudentAlreadyInThisGroup() {
+        dummyStudent.setStudentGroup(dummyStudentGroup);
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(dummyStudent));
+        when(studentGroupRepository.findById(groupId)).thenReturn(Optional.of(dummyStudentGroup));
+
+        assertThatThrownBy(() -> underTest.addStudentToStudentGroup(studentId, groupId))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Student is already assigned to this group");
+
+        verify(studentGroupRepository, never()).save(any());
+    }
+
+    @Test
+    void addStudentToStudentGroup_shouldThrowException_whenStudentInAnotherGroup() {
+        StudentGroup otherGroup = StudentGroup.builder().groupId(UUID.randomUUID()).build();
+        dummyStudent.setStudentGroup(otherGroup);
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(dummyStudent));
+        when(studentGroupRepository.findById(groupId)).thenReturn(Optional.of(dummyStudentGroup));
+
+        assertThatThrownBy(() -> underTest.addStudentToStudentGroup(studentId, groupId))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Student is already assigned to another group");
+
+        verify(studentGroupRepository, never()).save(any());
+    }
+    @Test
+    void addStudentToStudentGroup_shouldThrowException_whenGroupIsFull() {
+        // Arrange
+        for (int i = 0; i < 20; i++) {
+            Student student = Student.builder().build();
+            student.setStudentId(UUID.randomUUID());
+            dummyStudentGroup.getStudents().add(student);
+        }
+        dummyStudent.setStudentGroup(null);
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(dummyStudent));
+        when(studentGroupRepository.findById(groupId)).thenReturn(Optional.of(dummyStudentGroup));
+
+        assertThatThrownBy(() -> underTest.addStudentToStudentGroup(studentId, groupId))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Group capacity can not exceed 20 students.");
+
+        verify(studentGroupRepository, never()).save(any());
+    }
+
+    @Test
+    void addStudentToStudentGroup_shouldThrowException_whenLanguageDoesNotMatchTeacher() {
+        // Arrange
+        dummyStudent.setLanguage(Language.LUXEMBOURGISH); // Konflikt: Lehrer spricht GERMAN
+        dummyStudent.setStudentGroup(null);
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(dummyStudent));
+        when(studentGroupRepository.findById(groupId)).thenReturn(Optional.of(dummyStudentGroup));
+
+        // Act & Assert
+        assertThatThrownBy(() -> underTest.addStudentToStudentGroup(studentId, groupId))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Each student must have the same language as the teacher");
+
+        verify(studentGroupRepository, never()).save(any());
+    }
+
+    @Test
+    void assignTeacher_shouldThrowException_whenTeacherLanguageDoesNotMatchStudents() {
+        // Arrange
+        dummyStudent.setLanguage(Language.BOSNIAN);
+        UUID newTeacherId = UUID.randomUUID();
+        Teacher newTeacher = Teacher.builder()
+                .languages(Set.of(Language.LUXEMBOURGISH))
+                .build();
+        newTeacher.setTeacherId(newTeacherId);
+
+        dummyStudentGroup.getStudents().add(dummyStudent);
+
+        when(studentGroupRepository.findById(groupId)).thenReturn(Optional.of(dummyStudentGroup));
+        when(teacherRepository.findById(newTeacherId)).thenReturn(Optional.of(newTeacher));
+
+        // Act & Assert
+        assertThatThrownBy(() -> underTest.assignTeacher(groupId, newTeacherId))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Each student must have the same language as the teacher");
+
+        verify(studentGroupRepository, never()).save(any());
     }
 }
 

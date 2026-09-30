@@ -4,13 +4,16 @@ import Rastoder.SchoolManagementSystem.dto.TeacherRequest;
 import Rastoder.SchoolManagementSystem.dto.TeacherResponse;
 import Rastoder.SchoolManagementSystem.model.Teacher;
 import Rastoder.SchoolManagementSystem.repository.TeacherRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
@@ -21,6 +24,7 @@ public class TeacherService {
         this.teacherRepository = teacherRepository;
     }
 
+    @Transactional
     public TeacherResponse createTeacher(TeacherRequest request){
         Teacher t = Teacher.builder()
                 .firstName(request.firstName())
@@ -44,14 +48,15 @@ public class TeacherService {
 
     public TeacherResponse getTeacherById(UUID id) {
         Teacher te = teacherRepository.findById(id).orElseThrow(()->
-                new RuntimeException("The UUID doesn't match a Teacher."));
+                new EntityNotFoundException("The UUID doesn't match a Teacher."));
 
         return getTeacherResponse(te);
     }
 
+    @Transactional
     public TeacherResponse updateTeacherWithId(UUID id, TeacherRequest request) {
         Teacher te = teacherRepository.findById(id).orElseThrow(()->
-                new RuntimeException("The UUID doesn't match a Teacher."));
+                new EntityNotFoundException("The UUID doesn't match a Teacher."));
 
         // 2. Mutate (The Smart Update)
         if (request.description() != null) {
@@ -72,9 +77,10 @@ public class TeacherService {
         return getTeacherResponse(savedTeacher);
     }
 
+    @Transactional
     public TeacherResponse updateTeacherToInactive(UUID id) {
         Teacher te = teacherRepository.findById(id).orElseThrow(()->
-                new RuntimeException("The UUID doesn't match a Teacher."));
+                new EntityNotFoundException("The UUID doesn't match a Teacher."));
 
         te.setActive(false);
         Teacher saved = teacherRepository.save(te);

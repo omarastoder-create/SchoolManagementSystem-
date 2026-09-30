@@ -4,13 +4,16 @@ import Rastoder.SchoolManagementSystem.dto.ParentRequest;
 import Rastoder.SchoolManagementSystem.dto.ParentResponse;
 import Rastoder.SchoolManagementSystem.model.Parent;
 import Rastoder.SchoolManagementSystem.repository.ParentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class ParentService {
 
     private final ParentRepository parentRepository;
@@ -32,6 +35,7 @@ public class ParentService {
         );
     }
 
+    @Transactional
     public ParentResponse createParent(ParentRequest request){
 
         Parent parent = Parent.builder()
@@ -48,14 +52,15 @@ public class ParentService {
 
     public ParentResponse findById(UUID id) {
         Parent p = parentRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("Parent with the id ("+id+") not found."));
+                new EntityNotFoundException("Parent with the id ("+id+") not found."));
 
         return getParentResponse(p);
     }
 
+    @Transactional
     public ParentResponse updateParentWithId(UUID id, ParentRequest request) {
         Parent p = parentRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("Parent with the id ("+id+") not found."));
+                new EntityNotFoundException("Parent with the id ("+id+") not found."));
 
         if (request.email() != null){
             p.setEmail(request.email());
@@ -70,9 +75,10 @@ public class ParentService {
         return getParentResponse(saved);
     }
 
+    @Transactional
     public ParentResponse setParentToUnactive(UUID id) {
         Parent p = parentRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("Parent with the id ("+id+") not found."));
+                new EntityNotFoundException("Parent with the id ("+id+") not found."));
 
         p.setActive(false);
         Parent saved = parentRepository.save(p);

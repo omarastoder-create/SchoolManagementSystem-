@@ -148,16 +148,16 @@ The presentation layer is covered with **100% isolated slice tests** using `@Web
 ---
 
 ### 📍 Phase 2: Core Domain Logic & Service Testing (In Progress 🟡)
-* [ ] **Service-Layer Unit Testing:** 100% isolation testing using `@ExtendWith(MockitoExtension.class)` without Spring context overhead.
+* [x] **Service-Layer Unit Testing:** +80% isolation testing using `@ExtendWith(MockitoExtension.class)` without Spring context overhead.
 * [ ] **Business Invariant Enforcement:** Validate domain rules (e.g., student capacity limits, language-group allocations, active session constraints).
 * [ ] **RFC 7807 Global Exception Handling:** Mapping domain exceptions into standardized `ProblemDetail` payloads via `@RestControllerAdvice`.
 
 ---
 
-### 📍 Phase 3: Automated Quality Engineering & CI/CD (In Progress 🟡)
-* [ ] **Automated Code Coverage (JaCoCo):** Enforce strict coverage thresholds (>80% instruction and branch coverage) during `mvn verify`, failing builds on regression.
+### 📍 Phase 3: Automated Quality Engineering & CI/CD (Completed ✅)
+* [x] **Automated Code Coverage (JaCoCo):** Enforce strict coverage thresholds (>80% instruction and branch coverage) during `mvn verify`, failing builds on regression.
 * [x] **Static Code Analysis (SonarQube):** Automated detection of code smells, cyclomatic complexity, security vulnerabilities, and technical debt.
-* [ ] **GitHub Actions Quality Gate:** Fully automated CI pipeline executing build, JaCoCo report generation, and Sonar analysis on every Pull Request.
+* [x] **GitHub Actions Quality Gate:** Fully automated CI pipeline executing build, JaCoCo report generation, and Sonar analysis on every Pull Request.
 
 ---
 
