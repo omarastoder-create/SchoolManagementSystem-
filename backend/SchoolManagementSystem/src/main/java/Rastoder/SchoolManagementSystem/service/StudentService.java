@@ -8,23 +8,26 @@ import Rastoder.SchoolManagementSystem.model.Student;
 import Rastoder.SchoolManagementSystem.repository.ParentRepository;
 import Rastoder.SchoolManagementSystem.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @Service
 public class StudentService {
 
     private final StudentRepository studentRepository;
     private final ParentRepository parentRepository;
 
+
     public StudentService(StudentRepository studentRepository, ParentRepository parentRepository) {
         this.studentRepository = studentRepository;
         this.parentRepository = parentRepository;
     }
-
-    public StudentResponse createStudent(StudentRequest request) throws EntityNotFoundException {
+    @Transactional
+    public StudentResponse createStudent(StudentRequest request)  {
 
         Set<Parent> parentSet = new HashSet<>();
 
@@ -62,14 +65,15 @@ public class StudentService {
 
     public StudentResponse getStudentById(UUID id) {
         Student s = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student with the id " + id
+                .orElseThrow(() -> new EntityNotFoundException("Student with the id " + id
                         + " not found "));
         return getStudentResponse(s);
     }
 
+    @Transactional
     public StudentResponse addStudentLevel(UUID id) {
         Student s = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student with the id " + id + " not found "));
+                .orElseThrow(() -> new EntityNotFoundException("Student with the id " + id + " not found "));
 
         s.setLevel(s.getLevel() + 1);
 
@@ -78,9 +82,10 @@ public class StudentService {
         return getStudentResponse(saved);
     }
 
+    @Transactional
     public StudentResponse archiveStudentWithId(UUID id) {
         Student s = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student with the id " + id + " not found "));
+                .orElseThrow(() -> new EntityNotFoundException("Student with the id " + id + " not found "));
 
         s.setActive(false);
 
@@ -102,20 +107,21 @@ public class StudentService {
 
     }
 
-    private StudentResponse getStudentResponse(Student s){
+    private StudentResponse getStudentResponse(Student s) {
+        Set<UUID> parents = s.getParents() != null
+                ? s.getParents().stream().map(Parent::getParentId).collect(Collectors.toSet())
+                : Set.of();
 
-        Set<UUID> parents = s.getParents().stream()
-                .map(Parent::getParentId)
-                .collect(Collectors.toSet());
-
-        return new StudentResponse(s.getStudentId(),
+        return new StudentResponse(
+                s.getStudentId(),
                 s.getFirstName(),
                 s.getLastName(),
                 s.getBirthDate(),
                 s.getLevel(),
                 s.getLanguage(),
                 parents,
-                s.isActive());
+                s.isActive()
+        );
     }
 
     public List<StudentResponse> getAllStudentsWithLanguage(Language language) {

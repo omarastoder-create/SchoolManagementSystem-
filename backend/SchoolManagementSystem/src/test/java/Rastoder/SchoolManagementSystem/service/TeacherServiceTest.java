@@ -5,6 +5,7 @@ import Rastoder.SchoolManagementSystem.dto.TeacherResponse;
 import Rastoder.SchoolManagementSystem.model.Language;
 import Rastoder.SchoolManagementSystem.model.Teacher;
 import Rastoder.SchoolManagementSystem.repository.TeacherRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -199,10 +200,37 @@ public class TeacherServiceTest {
 
         // Act & Assert
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> underTest.getTeacherById(unknownId))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The UUID doesn't match a Teacher.");
 
         verify(teacherRepository).findById(unknownId);
+    }
+
+    @Test
+    void updateTeacherWithId_shouldThrowException_whenIdDoesNotExist() {
+        // Arrange
+        UUID unknownId = UUID.randomUUID();
+        TeacherRequest request = new TeacherRequest("A", "B", "123", "Desc", Set.of());
+        when(teacherRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> underTest.updateTeacherWithId(unknownId, request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The UUID doesn't match a Teacher.");
+
+        verify(teacherRepository, org.mockito.Mockito.never()).save(any());
+    }
+    @Test
+    void updateTeacherWithIdtoInactive_shouldThrowException_whenIdDoesNotExist() {
+        UUID unknownId = UUID.randomUUID();
+        when(teacherRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> underTest.updateTeacherToInactive(unknownId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The UUID doesn't match a Teacher.");
+
+        verify(teacherRepository, org.mockito.Mockito.never()).save(any());
     }
 
 }

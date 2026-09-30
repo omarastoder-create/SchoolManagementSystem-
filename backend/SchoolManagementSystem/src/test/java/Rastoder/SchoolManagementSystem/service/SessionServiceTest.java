@@ -3,10 +3,11 @@ package Rastoder.SchoolManagementSystem.service;
 import Rastoder.SchoolManagementSystem.dto.SessionRequest;
 import Rastoder.SchoolManagementSystem.dto.SessionResponse;
 import Rastoder.SchoolManagementSystem.dto.StudentResponse;
-import Rastoder.SchoolManagementSystem.model.Session;
-import Rastoder.SchoolManagementSystem.model.StudentGroup;
+import Rastoder.SchoolManagementSystem.exception.BusinessRuleViolationException;
+import Rastoder.SchoolManagementSystem.model.*;
 import Rastoder.SchoolManagementSystem.repository.SessionRepository;
 import Rastoder.SchoolManagementSystem.repository.StudentGroupRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -23,6 +25,7 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,18 +50,30 @@ class SessionServiceTest {
 
     @BeforeEach
     void setUp() {
-        sessionId = UUID.randomUUID();
         studentGroupId = UUID.randomUUID();
+        sessionId = UUID.randomUUID();
 
-        studentGroup = new StudentGroup();
-        studentGroup.setGroupId(studentGroupId);
+        Teacher dummyTeacher = Teacher.builder()
+                .build();
+        dummyTeacher.setTeacherId(UUID.randomUUID());
 
-        dummySession = new Session(
-                sessionId,
-                LocalDateTime.of(2024, 1, 1, 0, 0),
-                "Learning",
-                studentGroup
-        );
+        Student dummyStudent = Student.builder()
+                .build();
+        dummyStudent.setStudentId(UUID.randomUUID());
+
+        studentGroup = StudentGroup.builder()
+                .groupId(studentGroupId)
+                .room(Room.ROOM_1)
+                .teacher(dummyTeacher)
+                .students(Set.of(dummyStudent))
+                .build();
+
+        dummySession = Session.builder()
+                .sessionId(sessionId)
+                .startDate(LocalDateTime.now())
+                .content("Learning")
+                .studentGroup(studentGroup)
+                .build();
     }
 
     @Test
@@ -155,4 +170,50 @@ class SessionServiceTest {
         assertThat(response.startDate()).isEqualTo(originalStartDate);
         assertThat(response.studentGroup()).isEqualTo(studentGroupId);
     }
+    @Test
+    void createSession_shouldThrowException_whenContentIsBlank() {
+        SessionRequest request = new SessionRequest("   ", studentGroupId);
+
+        assertThatThrownBy(() -> underTest.createSession(request))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Session content must not be blank");
+
+        verifyNoInteractions(studentGroupRepository, sessionRepository);
+    }
+
+    @Test
+    void createSession_shouldThrowException_whenTeacherIsNull() {
+        // Arrange
+        studentGroup.setTeacher(null);
+        SessionRequest request = new SessionRequest("Valid description", studentGroupId);
+
+        when(studentGroupRepository.findById(studentGroupId)).thenReturn(Optional.of(studentGroup));
+
+        // Act & Assert
+        assertThatThrownBy(() -> underTest.createSession(request))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Cannot create a session for a group without an assigned teacher");
+
+        verify(studentGroupRepository).findById(studentGroupId);
+        verifyNoInteractions(sessionRepository);
+    }
+
+    @Test
+    void createSession_shouldThrowException_whenStudentIsNull() {
+        // Arrange
+        studentGroup.setStudents(null);
+        SessionRequest request = new SessionRequest("Valid description", studentGroupId);
+
+        when(studentGroupRepository.findById(studentGroupId)).thenReturn(Optional.of(studentGroup));
+
+        // Act & Assert
+        assertThatThrownBy(() -> underTest.createSession(request))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Cannot create a session for an empty student group");
+
+        verify(studentGroupRepository).findById(studentGroupId);
+        verifyNoInteractions(sessionRepository);
+    }
+
+
 }
