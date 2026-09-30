@@ -4,6 +4,7 @@ import Rastoder.SchoolManagementSystem.dto.ParentRequest;
 import Rastoder.SchoolManagementSystem.dto.ParentResponse;
 import Rastoder.SchoolManagementSystem.model.Parent;
 import Rastoder.SchoolManagementSystem.repository.ParentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.swing.*;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -113,7 +115,7 @@ public class ParentServiceTest {
 
         when(parentRepository.findById(falseId)).thenReturn(Optional.empty());
         //Act and Assert
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> underTest.findById(falseId))
+        assertThatThrownBy(() -> underTest.findById(falseId))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Parent with the id ("+falseId+") not found.");
 
@@ -219,5 +221,38 @@ public class ParentServiceTest {
 
         assertThat(response.email()).isEqualTo("hansen@g.com");
         assertThat(response.phoneNumber()).isEqualTo("123123123");
+    }
+
+    @Test
+    void findById_shouldThrowException_whenParentNotFound() {
+        UUID randomId = UUID.randomUUID();
+        when(parentRepository.findById(randomId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> underTest.findById(randomId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Parent with the id ("+randomId+") not found.");
+    }
+
+    @Test
+    void updateParentWithId_shouldThrowException_whenParentNotFound() {
+        UUID randomId = UUID.randomUUID();
+        ParentRequest request = new ParentRequest("John", "Doe", "test@test.com", "123");
+        when(parentRepository.findById(randomId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> underTest.updateParentWithId(randomId, request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Parent with the id ("+randomId+") not found.");
+        verify(parentRepository, never()).save(any());
+    }
+
+    @Test
+    void setParentToUnactive_shouldThrowException_whenParentNotFound() {
+        UUID randomId = UUID.randomUUID();
+        when(parentRepository.findById(randomId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> underTest.setParentToUnactive(randomId))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Parent with the id ("+randomId+") not found.");
+        verify(parentRepository, never()).save(any());
     }
 }

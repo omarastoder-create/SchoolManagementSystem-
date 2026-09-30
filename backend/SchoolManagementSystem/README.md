@@ -147,10 +147,10 @@ The presentation layer is covered with **100% isolated slice tests** using `@Web
 
 ---
 
-### 📍 Phase 2: Core Domain Logic & Service Testing (In Progress 🟡)
+### 📍 Phase 2: Core Domain Logic & Service Testing (Completed ✅)
 * [x] **Service-Layer Unit Testing:** +80% isolation testing using `@ExtendWith(MockitoExtension.class)` without Spring context overhead.
-* [ ] **Business Invariant Enforcement:** Validate domain rules (e.g., student capacity limits, language-group allocations, active session constraints).
-* [ ] **RFC 7807 Global Exception Handling:** Mapping domain exceptions into standardized `ProblemDetail` payloads via `@RestControllerAdvice`.
+* [x] **Business Invariant Enforcement:** Validate domain rules (e.g., student capacity limits, language-group allocations, active session constraints).
+* [x] **RFC 7807 Global Exception Handling:** Mapping domain exceptions into standardized `ProblemDetail` payloads via `@RestControllerAdvice`.
 
 ---
 
